@@ -10,7 +10,7 @@ router.get("/pog", (req, res) => {
 
 router.get("/", (req, res) => {
   res.json({
-    user: ["FortnitePogger69", "Marco", "Michael Yackson"],
+    user: ["FortnitePogger69", "Marco", "Michael Yackson", "Yimmy cockson"],
   });
 });
 
