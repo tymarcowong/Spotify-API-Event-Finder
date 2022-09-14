@@ -15,25 +15,37 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
-// router.get("/getToken", (req, res) => {
-//   const authOptions = {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/x-www-form-urlencoded",
-//       Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
-//     },
-//     data: `grant_type=client_credentials`,
-//   };
-//   axios(URL_SPOTIFY.token, authOptions)
-//     .then((result) => {
-//       res.json({
-//         access_token: result.data.access_token,
-//         token_type: result.data.token_type,
-//         expires_in: result.data.expires_in,
-//       });
-//     })
-//     .catch((e) => console.error(e));
-// });
+router.get("/getToken", (req, res) => {
+  const authOptions = {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+    },
+    data: `grant_type=client_credentials`,
+  };
+
+  const code =
+    "AQDRsWsU_mUZebfUj17yrZnHloFC38MGqKWaBTc3pFQiaaCa-3L7OcEFCpfCAwKzt_BwZJAWWyecxi6bZQq6A844MduDmvlEkiOD_EegOfHVxzul4Ju8FYzNRLQYjLjS1nLMUyZVDkBR0xOYXC5fY0azoeGwS2kiIv9dPnDXiFK5dZkvWCfg1xce6xX0sm226UsGTdtgMqLuFKsNFw";
+  axios
+    .post(
+      URL_SPOTIFY.token,
+      `grant_type=authorization_code&code=${code}&redirect_uri=http://localhost:3000`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+        },
+      }
+    )
+    .then((result) => {
+      res.json({
+        access_token: result.data.access_token,
+        token_type: result.data.token_type,
+        expires_in: result.data.expires_in,
+      });
+    })
+    .catch((e) => console.error(e));
+});
 
 router.get("/login", (req, res) => {
   let scope = "user-read-private user-read-email";
