@@ -61,12 +61,6 @@ router.post("/getToken", (req, res) => {
     .catch(() => res.sendStatus(400));
 });
 
-router.get("/test", (req, res) => {
-  axios(
-    "http://www.omdbapi.com/?&apikey=f3f82f16&i=tt1285016&plot=full&r=json&callback="
-  ).then((resp) => console.log(resp));
-});
-
 router.post("/topArtists", (req, res) => {
   const accessToken = req.body.accessToken;
 
