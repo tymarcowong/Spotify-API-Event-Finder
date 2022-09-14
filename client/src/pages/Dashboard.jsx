@@ -6,6 +6,7 @@ const Dashboard = ({ code }) => {
   const [accessToken, setAccessToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
   const [expiresAt, setExpiresAt] = useState();
+
   useEffect(() => {
     axios
       .post("http://localhost:5000/api/getToken", { code })
@@ -24,14 +25,24 @@ const Dashboard = ({ code }) => {
 
   useEffect(() => {
     if (accessToken) {
-      axios("https://api.spotify.com/v1/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }).then((result) => {
-        console.log(result);
-      });
+      console.log(accessToken);
+      if (Date.now() > expiresAt) {
+        console.log("expired");
+      } else {
+        console.log("not yet");
+      }
+      axios
+        .get("https://api.spotify.com/v1/me/top/tracks", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((result) => {
+          console.log(result.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
   }, [accessToken]);
   return (
