@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const paramsToString = require("../utils/paramsToString");
+const bodyParser = require("body-parser");
 
 // routes
 const URL_SPOTIFY = {
@@ -15,9 +16,11 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
-router.get("/getToken", (req, res) => {
-  const code =
-    "AQCJ-Nut0uqLAyNE5iNBJ2KgW08fNYO6alAGWHklycUDdLd1GHp7UyO6Dd6wP95mlnayDvbWwdIuQGZkvC_HNGWGeNkyd2DEF6hJv4pcAx_WszLyUlu07EqE2BvuN6fT7n7CD5Wz6De_-6TWChhKMZmo864DTBdZHnk8eS3UMoE-JoxusjuFNP-P5BSI0in35S-shZHVz9BBcDygcA";
+router.post("/getToken", (req, res) => {
+  console.log("pog");
+
+  console.log(req.body.js);
+  const code = req.body.code;
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
@@ -43,7 +46,7 @@ router.get("/getToken", (req, res) => {
         expires_at: expires_at,
       });
     })
-    .catch((e) => console.error(e));
+    .catch((e) => console.error("here"));
 });
 
 router.get("/login", (req, res) => {
