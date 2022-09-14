@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const querystring = require("querystring");
+const paramsToString = require("../utils/paramsToString");
 
 // routes
 const URL_SPOTIFY = {
@@ -16,32 +16,22 @@ const spotify = {
 };
 
 router.get("/getToken", (req, res) => {
-  const authOptions = {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
-    },
-    data: `grant_type=client_credentials`,
-  };
-
   const code =
-    "AQCSfLDEMo8Wq4tG4a4A7F_V6zjGCQJRwqcGJ6-Tjeq5p_vmCW4SOwTwo9fbrp-wChEJbnVy3lKJZWMKMUMRuiycJ6txt1j16BlVRUpbpCoiZcMq1HWk2qbXmGOWdZGgRfklUJcNT9ZgfE8w5XTZETKq9QtO-Mcl5CZpRDZuZrKRSsrW13CrYnrV5fedGI3IBqyZupcgcC9hm6fmFQ";
+    "AQDaJbuBaE2rd_SSEgFOiyN1WPnjFCWL6tocGcUy2VoDcUL6FarrOUnTERbCibTmiM6srtRrT6auJzDTnx7ZhHSCVwh-DP6O0WJh26cYSQmFhGPf6WFt5i6LnLS8XXcXglYYISyU-JaRVWnmRX2QSl3pdeYB3Fu2mcsa5dJP5Rfzn175vyT4HLI2TbTUckBvPs20rBsYrZbQGM1COw";
+
+  const dataString = paramsToString({
+    grant_type: "authorization_code",
+    code: code,
+    redirect_uri: "http://localhost:3000",
+  });
 
   axios
-    .post(
-      URL_SPOTIFY.token,
-      querystring.stringify({
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: "http://localhost:3000",
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
-        },
-      }
-    )
+    .post(URL_SPOTIFY.token, dataString, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+      },
+    })
     .then((result) => {
       res.json({
         access_token: result.data.access_token,
@@ -55,15 +45,14 @@ router.get("/getToken", (req, res) => {
 router.get("/login", (req, res) => {
   let scope = "user-read-private user-read-email";
 
-  res.redirect(
-    "https://accounts.spotify.com/authorize?" +
-      querystring.stringify({
-        response_type: "code",
-        client_id: spotify.id,
-        scope: scope,
-        redirect_uri: "http://localhost:3000",
-      })
-  );
+  const params = paramsToString({
+    response_type: "code",
+    client_id: spotify.id,
+    scope: scope,
+    redirect_uri: "http://localhost:3000",
+  });
+
+  res.redirect("https://accounts.spotify.com/authorize?" + params);
 });
 
 router.get("/", (req, res) => {
