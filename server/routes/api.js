@@ -17,26 +17,30 @@ const spotify = {
 
 router.get("/getToken", (req, res) => {
   const code =
-    "AQDaJbuBaE2rd_SSEgFOiyN1WPnjFCWL6tocGcUy2VoDcUL6FarrOUnTERbCibTmiM6srtRrT6auJzDTnx7ZhHSCVwh-DP6O0WJh26cYSQmFhGPf6WFt5i6LnLS8XXcXglYYISyU-JaRVWnmRX2QSl3pdeYB3Fu2mcsa5dJP5Rfzn175vyT4HLI2TbTUckBvPs20rBsYrZbQGM1COw";
-
-  const dataString = paramsToString({
+    "AQCJ-Nut0uqLAyNE5iNBJ2KgW08fNYO6alAGWHklycUDdLd1GHp7UyO6Dd6wP95mlnayDvbWwdIuQGZkvC_HNGWGeNkyd2DEF6hJv4pcAx_WszLyUlu07EqE2BvuN6fT7n7CD5Wz6De_-6TWChhKMZmo864DTBdZHnk8eS3UMoE-JoxusjuFNP-P5BSI0in35S-shZHVz9BBcDygcA";
+  const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
     redirect_uri: "http://localhost:3000",
   });
 
+  const header = {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+    },
+  };
+
   axios
-    .post(URL_SPOTIFY.token, dataString, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
-      },
-    })
+    .post(URL_SPOTIFY.token, data, header)
     .then((result) => {
+      const expires_in = result.data.expires_in;
+      const expires_at = Date.now() + expires_in;
+
       res.json({
         access_token: result.data.access_token,
-        token_type: result.data.token_type,
-        expires_in: result.data.expires_in,
+        refresh_token: result.data.refresh_token,
+        expires_at: expires_at,
       });
     })
     .catch((e) => console.error(e));
