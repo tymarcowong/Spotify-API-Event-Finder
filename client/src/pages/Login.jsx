@@ -1,9 +1,11 @@
 import React from "react";
 
+const URL = "http://localhost:5000/api/login";
+
 const Login = () => {
   return (
     <div className="login">
-      <a href="http://localhost:5000/api/login">login</a>
+      <a href={URL}>login</a>
     </div>
   );
 };

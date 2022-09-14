@@ -15,25 +15,25 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
-router.get("/getToken", (req, res) => {
-  const authOptions = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
-    },
-    data: `grant_type=client_credentials`,
-  };
-  axios(URL_SPOTIFY.token, authOptions)
-    .then((result) => {
-      res.json({
-        access_token: result.data.access_token,
-        token_type: result.data.token_type,
-        expires_in: result.data.expires_in,
-      });
-    })
-    .catch((e) => console.error(e));
-});
+// router.get("/getToken", (req, res) => {
+//   const authOptions = {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/x-www-form-urlencoded",
+//       Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+//     },
+//     data: `grant_type=client_credentials`,
+//   };
+//   axios(URL_SPOTIFY.token, authOptions)
+//     .then((result) => {
+//       res.json({
+//         access_token: result.data.access_token,
+//         token_type: result.data.token_type,
+//         expires_in: result.data.expires_in,
+//       });
+//     })
+//     .catch((e) => console.error(e));
+// });
 
 router.get("/login", (req, res) => {
   let scope = "user-read-private user-read-email";
