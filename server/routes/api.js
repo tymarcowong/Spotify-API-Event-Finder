@@ -25,11 +25,16 @@ router.get("/getToken", (req, res) => {
   };
 
   const code =
-    "AQDRsWsU_mUZebfUj17yrZnHloFC38MGqKWaBTc3pFQiaaCa-3L7OcEFCpfCAwKzt_BwZJAWWyecxi6bZQq6A844MduDmvlEkiOD_EegOfHVxzul4Ju8FYzNRLQYjLjS1nLMUyZVDkBR0xOYXC5fY0azoeGwS2kiIv9dPnDXiFK5dZkvWCfg1xce6xX0sm226UsGTdtgMqLuFKsNFw";
+    "AQCSfLDEMo8Wq4tG4a4A7F_V6zjGCQJRwqcGJ6-Tjeq5p_vmCW4SOwTwo9fbrp-wChEJbnVy3lKJZWMKMUMRuiycJ6txt1j16BlVRUpbpCoiZcMq1HWk2qbXmGOWdZGgRfklUJcNT9ZgfE8w5XTZETKq9QtO-Mcl5CZpRDZuZrKRSsrW13CrYnrV5fedGI3IBqyZupcgcC9hm6fmFQ";
+
   axios
     .post(
       URL_SPOTIFY.token,
-      `grant_type=authorization_code&code=${code}&redirect_uri=http://localhost:3000`,
+      querystring.stringify({
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: "http://localhost:3000",
+      }),
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
