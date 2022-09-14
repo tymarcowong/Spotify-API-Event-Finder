@@ -4,11 +4,11 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const paramsToString = require("../utils/paramsToString");
-const bodyParser = require("body-parser");
 
 // routes
-const URL_SPOTIFY = {
+const spotifyURL = {
   token: "https://accounts.spotify.com/api/token",
+  api: "https://api.spotify.com",
 };
 
 const spotify = {
@@ -16,11 +16,22 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
-router.post("/getToken", (req, res) => {
-  console.log("pog");
+router.get("/login", (req, res) => {
+  let scope = "user-read-private user-read-email";
 
-  console.log(req.body.js);
+  const params = paramsToString({
+    response_type: "code",
+    client_id: spotify.id,
+    scope: scope,
+    redirect_uri: "http://localhost:3000",
+  });
+
+  res.redirect("https://accounts.spotify.com/authorize?" + params);
+});
+
+router.post("/getToken", (req, res) => {
   const code = req.body.code;
+
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
@@ -35,7 +46,7 @@ router.post("/getToken", (req, res) => {
   };
 
   axios
-    .post(URL_SPOTIFY.token, data, header)
+    .post(spotifyURL.token, data, header)
     .then((result) => {
       const expires_in = result.data.expires_in;
       const expires_at = Date.now() + expires_in;
@@ -46,20 +57,26 @@ router.post("/getToken", (req, res) => {
         expires_at: expires_at,
       });
     })
-    .catch((e) => console.error("here"));
+    .catch(() => res.sendStatus(400));
 });
 
-router.get("/login", (req, res) => {
-  let scope = "user-read-private user-read-email";
+router.post("/topArtists", (req, res) => {
+  const accessToken = req.body.accessToken;
 
-  const params = paramsToString({
-    response_type: "code",
-    client_id: spotify.id,
-    scope: scope,
-    redirect_uri: "http://localhost:3000",
+  // const endpoint = "/v1/me/top/artists";
+  const endpoint = "/me";
+  const url = spotifyURL.api + endpoint;
+
+  console.log(accessToken);
+
+  axios(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((result) => {
+    console.log(result);
   });
-
-  res.redirect("https://accounts.spotify.com/authorize?" + params);
 });
 
 router.get("/", (req, res) => {
