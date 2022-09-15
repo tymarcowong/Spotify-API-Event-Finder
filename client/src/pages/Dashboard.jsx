@@ -7,6 +7,8 @@ const Dashboard = ({ code }) => {
   const [refreshToken, setRefreshToken] = useState("");
   const [expiresAt, setExpiresAt] = useState();
 
+  const [artists, setArtists] = useState([]);
+
   useEffect(() => {
     axios
       .post("http://localhost:5000/api/getToken", { code })
@@ -25,29 +27,56 @@ const Dashboard = ({ code }) => {
 
   useEffect(() => {
     if (accessToken) {
-      console.log(accessToken);
       if (Date.now() > expiresAt) {
         console.log("expired");
       } else {
         console.log("not yet");
       }
       axios
-        .get("https://api.spotify.com/v1/me/top/tracks", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+        .post("http://localhost:5000/api/topArtists", {
+          accessToken,
         })
         .then((result) => {
-          console.log(result.data);
+          setArtists(result.data);
         })
         .catch((e) => {
           console.log(e);
         });
     }
+    axios
+      .get("http://localhost:5000/api/findEvents")
+      .then((result) => {
+        console.log(result.data._embedded.events);
+        console.log("=============");
+        const data = result.data._embedded.events[0];
+
+        return {
+          id: data.id,
+          dates: data.dates,
+          images: data.images,
+          name: data.name,
+          url: data.url,
+          venue: data._embedded,
+        };
+      })
+      .then((event) => console.log(event))
+      .catch((e) => {
+        console.log(e);
+      });
   }, [accessToken]);
+
   return (
     <div>
       <h1>dashboard</h1>
+      <ul>
+        {artists.map((artist) => {
+          return (
+            <li key={artist.id}>
+              {artist.name} <img src={artist.image} />
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };

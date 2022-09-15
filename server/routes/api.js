@@ -11,10 +11,13 @@ const spotifyURL = {
   api: "https://api.spotify.com",
 };
 
+// keys
 const spotify = {
   id: process.env.SPOTIFY_ID,
   secret: process.env.SPOTIFY_SECRET,
 };
+
+const ticketMaster = { key: process.env.TM_KEY };
 
 router.get("/login", (req, res) => {
   let scope =
@@ -64,19 +67,37 @@ router.post("/getToken", (req, res) => {
 router.post("/topArtists", (req, res) => {
   const accessToken = req.body.accessToken;
 
-  // const endpoint = "/v1/me/top/artists";
-  const endpoint = "/me";
+  const endpoint = "/v1/me/top/artists";
   const url = spotifyURL.api + endpoint;
 
-  console.log(accessToken);
+  axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((result) => {
+      let out = [];
+      result.data.items.map((artist) => {
+        out.push({
+          name: artist.name,
+          url: artist.external_urls.spotify,
+          id: artist.id,
+          image: artist.images[0].url,
+        });
+      });
+      res.json(out);
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+});
 
-  axios(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((result) => {
-    console.log(result);
+router.get("/findEvents", (req, res) => {
+  const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=ariana%20grande`;
+  axios.get(url).then((result) => {
+    let out = [];
+    res.json(result.data);
   });
 });
 
