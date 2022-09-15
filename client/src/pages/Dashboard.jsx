@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import Map from "../components/Map";
 
 const Dashboard = ({ code }) => {
   const [accessToken, setAccessToken] = useState("");
@@ -42,27 +43,26 @@ const Dashboard = ({ code }) => {
         .catch((e) => {
           console.log(e);
         });
-    }
-    axios
-      .get("http://localhost:5000/api/findEvents")
-      .then((result) => {
-        console.log(result.data._embedded.events);
-        console.log("=============");
-        const data = result.data._embedded.events[0];
 
-        return {
-          id: data.id,
-          dates: data.dates,
-          images: data.images,
-          name: data.name,
-          url: data.url,
-          venue: data._embedded,
-        };
-      })
-      .then((event) => console.log(event))
-      .catch((e) => {
-        console.log(e);
-      });
+      axios
+        .get("http://localhost:5000/api/findEvents", { accessToken })
+        .then((result) => {
+          const data = result.data._embedded.events[0];
+
+          return {
+            id: data.id,
+            dates: data.dates,
+            images: data.images,
+            name: data.name,
+            url: data.url,
+            venue: data._embedded,
+          };
+        })
+        .then((event) => console.log(event))
+        .catch((e) => {
+          console.log(e);
+        });
+    }
   }, [accessToken]);
 
   return (
@@ -77,6 +77,7 @@ const Dashboard = ({ code }) => {
           );
         })}
       </ul>
+      <Map />
     </div>
   );
 };
