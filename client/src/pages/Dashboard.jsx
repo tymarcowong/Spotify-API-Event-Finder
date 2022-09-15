@@ -8,6 +8,10 @@ const Dashboard = ({ code }) => {
   const [refreshToken, setRefreshToken] = useState("");
   const [expiresAt, setExpiresAt] = useState();
 
+  // map
+  const [venueLat, setVenueLat] = useState(51.546708);
+  const [venueLng, setVenueLng] = useState(-0.103855);
+
   const [artists, setArtists] = useState([]);
 
   useEffect(() => {
@@ -28,11 +32,6 @@ const Dashboard = ({ code }) => {
 
   useEffect(() => {
     if (accessToken) {
-      if (Date.now() > expiresAt) {
-        console.log("expired");
-      } else {
-        console.log("not yet");
-      }
       axios
         .post("http://localhost:5000/api/topArtists", {
           accessToken,
@@ -45,20 +44,17 @@ const Dashboard = ({ code }) => {
         });
 
       axios
-        .get("http://localhost:5000/api/findEvents", { accessToken })
-        .then((result) => {
-          const data = result.data._embedded.events[0];
-
-          return {
-            id: data.id,
-            dates: data.dates,
-            images: data.images,
-            name: data.name,
-            url: data.url,
-            venue: data._embedded,
-          };
+        .get(`http://localhost:5000/api/findEvents?accessToken=${accessToken}`)
+        .then((res) => {
+          return res.data;
         })
-        .then((event) => console.log(event))
+        .then((events) => {
+          const coords = events.location.coords;
+          const lat = coords.lat;
+          const lng = coords.lng;
+          setVenueLat(lat);
+          setVenueLng(lng);
+        })
         .catch((e) => {
           console.log(e);
         });
@@ -77,7 +73,7 @@ const Dashboard = ({ code }) => {
           );
         })}
       </ul>
-      <Map />
+      <Map lat={venueLat} lng={venueLng} />
     </div>
   );
 };

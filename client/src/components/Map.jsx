@@ -17,16 +17,12 @@ const Map = ({ lat, lng }) => {
   L.Marker.prototype.options.icon = DefaultIcon;
 
   return (
-    <MapContainer
-      center={[51.546708, -0.103855]}
-      zoom={13}
-      scrollWheelZoom={true}
-    >
+    <MapContainer center={coords} zoom={13} scrollWheelZoom={true}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={[51.505, -0.09]} />
+      <Marker position={coords} />
     </MapContainer>
   );
 };

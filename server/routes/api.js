@@ -93,68 +93,76 @@ router.post("/topArtists", (req, res) => {
     });
 });
 
-router.get("/findEvents", (req, res) => {
-  console.log(req);
-  const accessToken = req.body.accessToken;
+// display events of n artists
+const findEventArtistCount = 5;
 
-  const endpoint = "/v1/me/top/artists?limit=5";
+router.get("/findEvents", (req, res) => {
+  const accessToken = req.query.accessToken;
+
+  const endpoint = `/v1/me/top/artists?limit=${findEventArtistCount}`;
   const url = spotifyURL.api + endpoint;
 
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   })
-  //   .then((result) => {
-  //     let out = [];
-  //     result.data.items.map((artist) => {
-  //       out.push(artist.name);
-  //     });
-  //     return out;
-  //   })
-  //   .then((artists) => {
-  //     let out = [];
-  //     // artists.map((artist) => {
-  //     //   const query = artist.replace(" ", "%20");
-  //     //   const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+  axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((result) => {
+      let out = [];
+      result.data.items.map((artist) => {
+        out.push(artist.name);
+      });
+      return out;
+    })
+    .then((artists) => {
+      let out = [];
 
-  //     // });
+      let artist = artists[1];
+      const query = artist.replace(" ", "%20");
+      const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
 
-  //     let artist = artists[1];
-  //     const query = artist.replace(" ", "%20");
-  //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
-  //     console.log(url);
-  //     axios
-  //       .get(url)
-  //       .then((result) => {
-  //         console.log(result.data._embedded.events[0]);
-  //         console.log("location-----------------------");
-  //         console.log(result.data._embedded.events[0]._embedded.venues[0].name);
-  //         console.log(
-  //           result.data._embedded.events[0]._embedded.venues[0].location
-  //         );
-  //       })
-  //       .catch((e) => {
-  //         console.log("error");
-  //       });
-  //   })
-  //   // .then((artists) => {
-  //   //
-  //   //   artists.map((artist) => {
-  //   //     console.log(artist.name);
-  //   //     const query = artist.name.replace(" ", "%20");
-  //   //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
-  //   //     console.log(url);
-  //   //     // axios.get(url).then((result) => {
-  //   //     //   out.push(result);
-  //   //     // });
-  //   //   });
-  //   //   res.json(out);
-  //   // })
-  //   .catch((e) => {
-  //     console.error(e);
-  //   });
+      axios
+        .get(url)
+        .then((result) => {
+          // console.log(result.data._embedded.events[0]);
+          // console.log("location-----------------------");
+          // console.log(result.data._embedded.events[0]._embedded.venues[0].name);
+          // console.log(
+          //   result.data._embedded.events[0]._embedded.venues[0].location
+          // );
+          res.json({
+            location: {
+              name: result.data._embedded.events[0]._embedded.venues[0].name,
+              coords: {
+                lat: result.data._embedded.events[0]._embedded.venues[0]
+                  .location.latitude,
+                lng: result.data._embedded.events[0]._embedded.venues[0]
+                  .location.longitude,
+              },
+            },
+          });
+        })
+        .catch((e) => {
+          console.log("error");
+        });
+    })
+    // .then((artists) => {
+    //
+    //   artists.map((artist) => {
+    //     console.log(artist.name);
+    //     const query = artist.name.replace(" ", "%20");
+    //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+    //     console.log(url);
+    //     // axios.get(url).then((result) => {
+    //     //   out.push(result);
+    //     // });
+    //   });
+    //   res.json(out);
+    // })
+    .catch((e) => {
+      console.error(e);
+    });
 });
 
 module.exports = router;
