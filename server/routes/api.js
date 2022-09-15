@@ -6,18 +6,36 @@ const axios = require("axios");
 const paramsToString = require("../utils/paramsToString");
 
 // routes
-const URL_SPOTIFY = {
+const spotifyURL = {
   token: "https://accounts.spotify.com/api/token",
+  api: "https://api.spotify.com",
 };
 
+// keys
 const spotify = {
   id: process.env.SPOTIFY_ID,
   secret: process.env.SPOTIFY_SECRET,
 };
 
-router.get("/getToken", (req, res) => {
-  const code =
-    "AQCJ-Nut0uqLAyNE5iNBJ2KgW08fNYO6alAGWHklycUDdLd1GHp7UyO6Dd6wP95mlnayDvbWwdIuQGZkvC_HNGWGeNkyd2DEF6hJv4pcAx_WszLyUlu07EqE2BvuN6fT7n7CD5Wz6De_-6TWChhKMZmo864DTBdZHnk8eS3UMoE-JoxusjuFNP-P5BSI0in35S-shZHVz9BBcDygcA";
+const ticketMaster = { key: process.env.TM_KEY };
+
+router.get("/login", (req, res) => {
+  let scope =
+    "user-read-private user-read-email user-read-recently-played playlist-read-collaborative user-top-read";
+
+  const params = paramsToString({
+    response_type: "code",
+    client_id: spotify.id,
+    scope: scope,
+    redirect_uri: "http://localhost:3000",
+  });
+
+  res.redirect("https://accounts.spotify.com/authorize?" + params);
+});
+
+router.post("/getToken", (req, res) => {
+  const code = req.body.code;
+
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
@@ -32,7 +50,7 @@ router.get("/getToken", (req, res) => {
   };
 
   axios
-    .post(URL_SPOTIFY.token, data, header)
+    .post(spotifyURL.token, data, header)
     .then((result) => {
       const expires_in = result.data.expires_in;
       const expires_at = Date.now() + expires_in;
@@ -43,26 +61,100 @@ router.get("/getToken", (req, res) => {
         expires_at: expires_at,
       });
     })
-    .catch((e) => console.error(e));
+    .catch(() => res.sendStatus(400));
 });
 
-router.get("/login", (req, res) => {
-  let scope = "user-read-private user-read-email";
+router.post("/topArtists", (req, res) => {
+  const accessToken = req.body.accessToken;
 
-  const params = paramsToString({
-    response_type: "code",
-    client_id: spotify.id,
-    scope: scope,
-    redirect_uri: "http://localhost:3000",
-  });
+  const endpoint = "/v1/me/top/artists";
+  const url = spotifyURL.api + endpoint;
 
-  res.redirect("https://accounts.spotify.com/authorize?" + params);
+  axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((result) => {
+      let out = [];
+      result.data.items.map((artist) => {
+        out.push({
+          name: artist.name,
+          url: artist.external_urls.spotify,
+          id: artist.id,
+          image: artist.images[0].url,
+        });
+      });
+      res.json(out);
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 });
 
-router.get("/", (req, res) => {
-  res.json({
-    user: ["FortnitePogger69", "Marco", "Michael Yackson", "Yimmy cockson"],
-  });
+router.get("/findEvents", (req, res) => {
+  console.log(req);
+  const accessToken = req.body.accessToken;
+
+  const endpoint = "/v1/me/top/artists?limit=5";
+  const url = spotifyURL.api + endpoint;
+
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${accessToken}`,
+  //     },
+  //   })
+  //   .then((result) => {
+  //     let out = [];
+  //     result.data.items.map((artist) => {
+  //       out.push(artist.name);
+  //     });
+  //     return out;
+  //   })
+  //   .then((artists) => {
+  //     let out = [];
+  //     // artists.map((artist) => {
+  //     //   const query = artist.replace(" ", "%20");
+  //     //   const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+
+  //     // });
+
+  //     let artist = artists[1];
+  //     const query = artist.replace(" ", "%20");
+  //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+  //     console.log(url);
+  //     axios
+  //       .get(url)
+  //       .then((result) => {
+  //         console.log(result.data._embedded.events[0]);
+  //         console.log("location-----------------------");
+  //         console.log(result.data._embedded.events[0]._embedded.venues[0].name);
+  //         console.log(
+  //           result.data._embedded.events[0]._embedded.venues[0].location
+  //         );
+  //       })
+  //       .catch((e) => {
+  //         console.log("error");
+  //       });
+  //   })
+  //   // .then((artists) => {
+  //   //
+  //   //   artists.map((artist) => {
+  //   //     console.log(artist.name);
+  //   //     const query = artist.name.replace(" ", "%20");
+  //   //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+  //   //     console.log(url);
+  //   //     // axios.get(url).then((result) => {
+  //   //     //   out.push(result);
+  //   //     // });
+  //   //   });
+  //   //   res.json(out);
+  //   // })
+  //   .catch((e) => {
+  //     console.error(e);
+  //   });
 });
 
 module.exports = router;
