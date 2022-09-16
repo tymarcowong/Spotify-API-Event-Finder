@@ -42,10 +42,14 @@ router.post("/getToken", (req, res) => {
     redirect_uri: process.env.CLIENT_URL,
   });
 
+  const spotifyAuth = Buffer.from(spotify.id + ":" + spotify.secret).toString(
+    "base64"
+  );
+
   const header = {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${btoa(spotify.id + ":" + spotify.secret)}`,
+      Authorization: `Basic ${spotifyAuth}`,
     },
   };
 
