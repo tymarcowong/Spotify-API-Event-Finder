@@ -27,7 +27,7 @@ router.get("/login", (req, res) => {
     response_type: "code",
     client_id: spotify.id,
     scope: scope,
-    redirect_uri: "http://localhost:3000",
+    redirect_uri: process.env.CLIENT_URL,
   });
 
   res.redirect("https://accounts.spotify.com/authorize?" + params);
@@ -39,7 +39,7 @@ router.post("/getToken", (req, res) => {
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
-    redirect_uri: "http://localhost:3000",
+    redirect_uri: process.env.CLIENT_URL,
   });
 
   const header = {

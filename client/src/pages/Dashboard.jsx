@@ -8,15 +8,18 @@ const Dashboard = ({ code }) => {
   const [refreshToken, setRefreshToken] = useState("");
   const [expiresAt, setExpiresAt] = useState();
 
-  // map
+  // map data
   const [venueLat, setVenueLat] = useState(51.546708);
   const [venueLng, setVenueLng] = useState(-0.103855);
 
   const [artists, setArtists] = useState([]);
 
+  const URL_SERVER = process.env.REACT_APP_SERVER_URL;
+
   useEffect(() => {
+    const endPoint = "/api/getToken";
     axios
-      .post("http://localhost:5000/api/getToken", { code })
+      .post(`${URL_SERVER}${endPoint}`, { code })
       .then((res) => {
         // remove param from url
         window.history.pushState({}, null, "/");
@@ -32,8 +35,9 @@ const Dashboard = ({ code }) => {
 
   useEffect(() => {
     if (accessToken) {
+      const endPointArtist = "/api/topArtists";
       axios
-        .post("http://localhost:5000/api/topArtists", {
+        .post(`${URL_SERVER}${endPointArtist}`, {
           accessToken,
         })
         .then((result) => {
@@ -43,8 +47,10 @@ const Dashboard = ({ code }) => {
           console.log(e);
         });
 
+      const endPointEvents = `/api/findEvents?accessToken=${accessToken}`;
+      const queryEvents = `?accessToken=${accessToken}`;
       axios
-        .get(`http://localhost:5000/api/findEvents?accessToken=${accessToken}`)
+        .get(`${URL_SERVER}${endPointArtist}${accessToken}`)
         .then((res) => {
           return res.data;
         })
