@@ -4,6 +4,9 @@ const express = require("express");
 const routerAPI = require("./routes/api");
 const cors = require("cors");
 
+// persistence stuff
+//const responseTime = require("response-time");
+
 const app = express();
 
 app.use(cors());
