@@ -69,7 +69,7 @@ const Dashboard = ({ code }) => {
 
   return (
     <div>
-      <h1>dashboard</h1>
+      <h1 class="text-4xl">dashboard</h1>
       <ul>
         {artists.map((artist) => {
           return (

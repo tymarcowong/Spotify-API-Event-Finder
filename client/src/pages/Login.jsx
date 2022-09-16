@@ -7,7 +7,7 @@ const Login = () => {
     <div className="w-screen h-screen bg-black flex content-center items-center justify-center">
       <a
         href={URL_LOGIN}
-        className="text-white bg-green-500 inline text-4xl px-16 py-4 rounded-full font-bold"
+        className="text-white bg-green-500 inline text-4xl px-16 py-4 rounded-full"
       >
         Login
       </a>
