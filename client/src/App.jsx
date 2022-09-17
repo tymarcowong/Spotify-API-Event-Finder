@@ -16,10 +16,14 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Open dashboard if a valid token is found
     if (getTokenFromLS() !== null && !tokenExpired()) {
       setLoggedIn(true);
       return;
     }
+
+    // Read params from URL provided by backend.
+    // No params can be read if it was not redirected from backend.
     const params = new URLSearchParams(window.location.search);
 
     const accessToken = params.get("access_token");
@@ -35,7 +39,6 @@ const App = () => {
     }
   }, []);
 
-  // change to if no accesstoken
   return <>{loggedIn ? <Dashboard /> : <Login />}</>;
 };
 
