@@ -17,9 +17,9 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
-const CLIENT_URL = `http://${process.env.URL}:3000`;
-
 const ticketMaster = { key: process.env.TM_KEY };
+
+const CLIENT_URL = `http://${process.env.URL}:3000`;
 
 const REDIRECT_URI = `http://${process.env.URL}:5000/api/callback`;
 router.get("/login", (req, res) => {

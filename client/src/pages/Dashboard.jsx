@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import Map from "../components/Map";
-import { getTokenFromLS } from "../utils";
+import { getTokenFromLS, logout } from "../utils";
+import Header from "../components/Header";
 
 const Dashboard = () => {
   // map data
-  const [venueLat, setVenueLat] = useState(51.546708);
-  const [venueLng, setVenueLng] = useState(-0.103855);
+  const [venueLat, setVenueLat] = useState(0);
+  const [venueLng, setVenueLng] = useState(0);
 
   const [artists, setArtists] = useState([]);
 
@@ -26,32 +27,14 @@ const Dashboard = () => {
           setArtists(result.data);
         })
         .catch((e) => {
-          console.log(e);
-        });
-
-      const endPointEvents = `/api/findEvents?accessToken=${accessToken}`;
-      const queryEvents = `?accessToken=${accessToken}`;
-      axios
-        .get(`${SERVER_URL}${endPointArtist}${accessToken}`)
-        .then((res) => {
-          return res.data;
-        })
-        .then((events) => {
-          const coords = events.location.coords;
-          const lat = coords.lat;
-          const lng = coords.lng;
-          setVenueLat(lat);
-          setVenueLng(lng);
-        })
-        .catch((e) => {
-          console.log(e);
+          console.log("error");
         });
     }
-  }, [accessToken]);
+  }, []);
 
   return (
-    <div>
-      <h1 class="text-4xl">dashboard</h1>
+    <div className="bg-black text-white">
+      <Header />
       <ul>
         {artists.map((artist) => {
           return (

@@ -17,3 +17,9 @@ export const getExpiresAt = () => {
 export const tokenExpired = () => {
   return getExpiresAt() <= Date.now();
 };
+
+export const logout = () => {
+  window.localStorage.removeItem("cab432-access-token");
+  window.localStorage.removeItem("cab432-expires-at");
+  window.location.reload();
+};
