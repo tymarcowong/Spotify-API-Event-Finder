@@ -1,6 +1,6 @@
 import React from "react";
 
-const URL_LOGIN = `${process.env.REACT_APP_SERVER_URL}/api/login`;
+const URL_LOGIN = `http://${process.env.REACT_APP_URL}:5000/api/login`;
 
 const Login = () => {
   return (

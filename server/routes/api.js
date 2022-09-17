@@ -17,6 +17,8 @@ const spotify = {
   secret: process.env.SPOTIFY_SECRET,
 };
 
+const CLIENT_URL = `http://${process.env.URL}:3000`;
+
 const ticketMaster = { key: process.env.TM_KEY };
 
 router.get("/login", (req, res) => {
@@ -27,7 +29,7 @@ router.get("/login", (req, res) => {
     response_type: "code",
     client_id: spotify.id,
     scope: scope,
-    redirect_uri: process.env.CLIENT_URL,
+    redirect_uri: CLIENT_URL,
   });
 
   res.redirect("https://accounts.spotify.com/authorize?" + params);
@@ -39,7 +41,7 @@ router.post("/getToken", (req, res) => {
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
-    redirect_uri: process.env.CLIENT_URL,
+    redirect_uri: CLIENT_URL,
   });
 
   const spotifyAuth = Buffer.from(spotify.id + ":" + spotify.secret).toString(

@@ -14,7 +14,7 @@ const Dashboard = ({ code }) => {
 
   const [artists, setArtists] = useState([]);
 
-  const URL_SERVER = process.env.REACT_APP_SERVER_URL;
+  const URL_SERVER = `http://${process.env.REACT_APP_URL}:5000`;
 
   useEffect(() => {
     const endPoint = "/api/getToken";
