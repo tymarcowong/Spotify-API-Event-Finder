@@ -4,6 +4,7 @@ import axios from "axios";
 import Map from "../components/Map";
 import { getTokenFromLS, logout } from "../utils";
 import Header from "../components/Header";
+import TopArtists from "../container/TopArtists";
 
 const Dashboard = () => {
   // map data
@@ -35,15 +36,7 @@ const Dashboard = () => {
   return (
     <div className="bg-black text-white">
       <Header />
-      <ul>
-        {artists.map((artist) => {
-          return (
-            <li key={artist.id}>
-              {artist.name} <img src={artist.image} />
-            </li>
-          );
-        })}
-      </ul>
+      <TopArtists artists={artists} />
       <Map lat={venueLat} lng={venueLng} />
     </div>
   );
