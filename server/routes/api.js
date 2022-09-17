@@ -21,6 +21,7 @@ const CLIENT_URL = `http://${process.env.URL}:3000`;
 
 const ticketMaster = { key: process.env.TM_KEY };
 
+const REDIRECT_URI = `http://${process.env.URL}:5000/api/callback`;
 router.get("/login", (req, res) => {
   let scope =
     "user-read-private user-read-email user-read-recently-played playlist-read-collaborative user-top-read";
@@ -29,45 +30,38 @@ router.get("/login", (req, res) => {
     response_type: "code",
     client_id: spotify.id,
     scope: scope,
-    redirect_uri: CLIENT_URL,
+    redirect_uri: REDIRECT_URI,
   });
 
   res.redirect("https://accounts.spotify.com/authorize?" + params);
 });
 
-router.post("/getToken", (req, res) => {
-  const code = req.body.code;
+router.get("/callBack", (req, res) => {
+  const code = req.query.code || null;
 
   const data = paramsToString({
     grant_type: "authorization_code",
     code: code,
-    redirect_uri: CLIENT_URL,
+    redirect_uri: REDIRECT_URI,
   });
-
-  const spotifyAuth = Buffer.from(spotify.id + ":" + spotify.secret).toString(
-    "base64"
-  );
 
   const header = {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${spotifyAuth}`,
+      Authorization: `Basic ${new Buffer.from(
+        `${spotify.id}:${spotify.secret}`
+      ).toString("base64")}`,
     },
   };
 
   axios
     .post(spotifyURL.token, data, header)
-    .then((result) => {
-      const expires_in = result.data.expires_in;
-      const expires_at = Date.now() + expires_in;
-
-      res.json({
-        access_token: result.data.access_token,
-        refresh_token: result.data.refresh_token,
-        expires_at: expires_at,
-      });
+    .then((response) => {
+      const expiresAt = Date.now() + response.data.expires_in * 1000; // converts expires_in value from seconds to miliseconds
+      res.redirect(
+        `${CLIENT_URL}/?access_token=${response.data.access_token}&expires_at=${expiresAt}`
+      );
     })
-    .catch(() => res.sendStatus(400));
+    .catch((err) => console.log(err));
 });
 
 router.post("/topArtists", (req, res) => {
