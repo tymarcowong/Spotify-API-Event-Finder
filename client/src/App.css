@@ -5,3 +5,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.horizontal-card-border:not(:last-child) {
+  border-right: white 1px solid;
+}
+
+.leaflet-container {
+  width: 50rem;
+  height: 40rem;
+}

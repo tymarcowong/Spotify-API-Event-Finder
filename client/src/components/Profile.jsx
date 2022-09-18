@@ -3,6 +3,7 @@ import axios from "axios";
 import { getEndpointUrl, getTokenFromLS } from "../utils";
 import { AiOutlineLink } from "react-icons/ai";
 import Loading from "./Loading";
+import OpenSpotifyBtn from "./OpenSpotifyBtn";
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
@@ -47,12 +48,7 @@ const Profile = () => {
           <p className="text-gray-500">
             Country/ Region: {profile.country} | Followers: {profile.followers}
           </p>
-          <a
-            href={profile.spotifyUrl}
-            className="flex items-center gap-2 outline outline-2 rounded-full px-2 py-1 hover:bg-green-600"
-          >
-            Open Spotify <AiOutlineLink />
-          </a>
+          <OpenSpotifyBtn link={profile.spotifyUrl} />
         </>
       )}
     </section>

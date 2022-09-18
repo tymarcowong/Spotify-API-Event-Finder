@@ -13,13 +13,12 @@ const Main = () => {
   const [venueLng, setVenueLng] = useState(0);
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-black text-white min-h-screen">
       <Header />
       <Profile />
       <div className="bg-green-500">Find events for you</div>
       <p>Find events based on your favourtite artists!</p>
       <TopArtists />
-      <Map lat={venueLat} lng={venueLng} />
     </div>
   );
 };
