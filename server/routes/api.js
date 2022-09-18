@@ -153,15 +153,14 @@ router.get("/findEvents", (req, res) => {
       return out;
     })
     .then(async (artists) => {
+      const promises = [];
+      artists.map((artist) => {
+        promises.push(getEvents(artist.name));
+      });
+
+      const events = await Promise.all(promises);
+
       let out = [];
-
-      const events = await Promise.all([
-        getEvents(artists[0].name),
-        getEvents(artists[1].name),
-        getEvents(artists[2].name),
-        getEvents(artists[3].name),
-      ]);
-
       let i = 0;
       artists.map((artist) => {
         out.push({
