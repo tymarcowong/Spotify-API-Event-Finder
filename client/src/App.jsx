@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-import Dashboard from "./pages/Dashboard";
+import Main from "./pages/Main";
 import Login from "./pages/Login";
 
 import {
   getExpiresAt,
   getTokenFromLS,
+  logout,
+  removeExpiresAt,
+  removeToken,
   storeExpiresAt,
   storeTokenToLS,
   tokenExpired,
@@ -21,6 +24,9 @@ const App = () => {
       setLoggedIn(true);
       return;
     }
+
+    removeExpiresAt();
+    removeToken();
 
     // Read params from URL provided by backend.
     // No params can be read if it was not redirected from backend.
@@ -39,7 +45,7 @@ const App = () => {
     }
   }, []);
 
-  return <>{loggedIn ? <Dashboard /> : <Login />}</>;
+  return <>{loggedIn ? <Main /> : <Login />}</>;
 };
 
 export default App;

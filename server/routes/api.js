@@ -64,6 +64,32 @@ router.get("/callBack", (req, res) => {
     .catch((err) => console.log(err));
 });
 
+router.get("/profile", (req, res) => {
+  const accessToken = req.query.accessToken;
+
+  const endpoint = "/v1/me";
+  const url = spotifyURL.api + endpoint;
+
+  axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .then((data) => {
+      res.json({
+        image: data.images[0].url,
+        followers: data.followers.total,
+        spotifyUrl: data.external_urls.spotify,
+        name: data.display_name,
+        country: data.country,
+      });
+    });
+});
+
 router.post("/topArtists", (req, res) => {
   const accessToken = req.body.accessToken;
 
