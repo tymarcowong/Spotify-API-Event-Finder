@@ -1,4 +1,5 @@
 import React from "react";
+import Events from "../container/Events";
 import OpenSpotifyBtn from "./OpenSpotifyBtn";
 
 const ArtistEventCard = ({ artist }) => {
@@ -14,6 +15,8 @@ const ArtistEventCard = ({ artist }) => {
       </div>
       <p className="text-gray-500">Followers: {artist.followers}</p>
       <OpenSpotifyBtn link={artist.spotifyUrl} />
+      <h3 className="block">Upcoming events</h3>
+      <Events events={artist.events} />
     </li>
   );
 };
