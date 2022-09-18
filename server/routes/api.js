@@ -134,44 +134,56 @@ router.get("/findEvents", (req, res) => {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .then((result) => {
-      let out = [];
-      result.data.items.map((artist) => {
-        out.push(artist.name);
-      });
-      return out;
+    .then((response) => {
+      return response.data.items;
     })
     .then((artists) => {
-      let out = [];
-
-      let artist = artists[1];
-      const query = artist.replace(" ", "%20");
-      const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
-
-      axios
-        .get(url)
-        .then((result) => {
-          // console.log(result.data._embedded.events[0]);
-          // console.log("location-----------------------");
-          // console.log(result.data._embedded.events[0]._embedded.venues[0].name);
-          // console.log(
-          //   result.data._embedded.events[0]._embedded.venues[0].location
-          // );
-          res.json({
-            location: {
-              name: result.data._embedded.events[0]._embedded.venues[0].name,
-              coords: {
-                lat: result.data._embedded.events[0]._embedded.venues[0]
-                  .location.latitude,
-                lng: result.data._embedded.events[0]._embedded.venues[0]
-                  .location.longitude,
-              },
-            },
-          });
-        })
-        .catch((e) => {
-          console.log("error");
-        });
+      const artist = artists[0];
+      res.json([
+        {
+          spotifyUrl: artist.external_urls.spotify,
+          followers: artist.followers.total,
+          image: artist.images[0].url,
+          name: artist.name,
+          id: artist.id,
+        },
+      ]);
+      // let out = [];
+      // result.data.items.map((artist) => {
+      //   out.push(artist.name);
+      // });
+      // return out;
+    })
+    .then((artists) => {
+      // res.json(artists);
+      // let out = [];
+      // let artist = artists[1];
+      // const query = artist.replace(" ", "%20");
+      // const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+      // axios
+      //   .get(url)
+      //   .then((result) => {
+      //     // console.log(result.data._embedded.events[0]);
+      //     // console.log("location-----------------------");
+      //     // console.log(result.data._embedded.events[0]._embedded.venues[0].name);
+      //     // console.log(
+      //     //   result.data._embedded.events[0]._embedded.venues[0].location
+      //     // );
+      //     res.json({
+      //       location: {
+      //         name: result.data._embedded.events[0]._embedded.venues[0].name,
+      //         coords: {
+      //           lat: result.data._embedded.events[0]._embedded.venues[0]
+      //             .location.latitude,
+      //           lng: result.data._embedded.events[0]._embedded.venues[0]
+      //             .location.longitude,
+      //         },
+      //       },
+      //     });
+      //   })
+      //   .catch((e) => {
+      //     console.log("error");
+      //   });
     })
     // .then((artists) => {
     //

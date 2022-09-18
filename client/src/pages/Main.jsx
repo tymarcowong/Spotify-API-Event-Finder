@@ -12,34 +12,13 @@ const Main = () => {
   const [venueLat, setVenueLat] = useState(0);
   const [venueLng, setVenueLng] = useState(0);
 
-  const [artists, setArtists] = useState([]);
-
-  const accessToken = getTokenFromLS();
-
-  useEffect(() => {
-    if (accessToken) {
-      const url = getEndpointUrl("/api/topArtists");
-
-      axios
-        .post(url, {
-          accessToken,
-        })
-        .then((result) => {
-          setArtists(result.data);
-        })
-        .catch((e) => {
-          console.log("error");
-        });
-    }
-  }, []);
-
   return (
     <div className="bg-black text-white">
       <Header />
       <Profile />
       <div className="bg-green-500">Find events for you</div>
       <p>Find events based on your favourtite artists!</p>
-      <TopArtists artists={artists} />
+      <TopArtists />
       <Map lat={venueLat} lng={venueLng} />
     </div>
   );
