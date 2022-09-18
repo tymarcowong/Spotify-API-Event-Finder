@@ -45,8 +45,7 @@ const App = () => {
     }
   }, []);
 
-  return <>{true ? <Main /> : <Login />}</>;
-  // return <>{loggedIn ? <Main /> : <Login />}</>;
+  return <>{loggedIn ? <Main /> : <Login />}</>;
 };
 
 export default App;

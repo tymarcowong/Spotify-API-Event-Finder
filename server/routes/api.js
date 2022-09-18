@@ -23,6 +23,7 @@ const CLIENT_URL = `http://${process.env.URL}:3000`;
 
 const REDIRECT_URI = `http://${process.env.URL}:5000/api/callback`;
 router.get("/login", (req, res) => {
+  console.log("pog");
   let scope =
     "user-read-private user-read-email user-read-recently-played playlist-read-collaborative user-top-read";
 
@@ -31,6 +32,7 @@ router.get("/login", (req, res) => {
     client_id: spotify.id,
     scope: scope,
     redirect_uri: REDIRECT_URI,
+    show_dialog: true,
   });
 
   res.redirect("https://accounts.spotify.com/authorize?" + params);
@@ -138,16 +140,18 @@ router.get("/findEvents", (req, res) => {
       return response.data.items;
     })
     .then((artists) => {
-      const artist = artists[0];
-      res.json([
-        {
+      // const artist = artists[0];
+      let out = [];
+      artists.map((artist) => {
+        out.push({
           spotifyUrl: artist.external_urls.spotify,
           followers: artist.followers.total,
           image: artist.images[0].url,
           name: artist.name,
           id: artist.id,
-        },
-      ]);
+        });
+      });
+      return out;
       // let out = [];
       // result.data.items.map((artist) => {
       //   out.push(artist.name);
@@ -155,6 +159,7 @@ router.get("/findEvents", (req, res) => {
       // return out;
     })
     .then((artists) => {
+      res.json(artists);
       // res.json(artists);
       // let out = [];
       // let artist = artists[1];
