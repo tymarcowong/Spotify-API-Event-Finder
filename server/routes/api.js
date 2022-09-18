@@ -23,7 +23,6 @@ const CLIENT_URL = `http://${process.env.URL}:3000`;
 
 const REDIRECT_URI = `http://${process.env.URL}:5000/api/callback`;
 router.get("/login", (req, res) => {
-  console.log("pog");
   let scope =
     "user-read-private user-read-email user-read-recently-played playlist-read-collaborative user-top-read";
 
@@ -121,8 +120,8 @@ router.post("/topArtists", (req, res) => {
     });
 });
 
-// display events of n artists
-const findEventArtistCount = 5;
+// display events of top n artists
+const findEventArtistCount = 4;
 
 router.get("/findEvents", (req, res) => {
   const accessToken = req.query.accessToken;
@@ -140,7 +139,7 @@ router.get("/findEvents", (req, res) => {
       return response.data.items;
     })
     .then((artists) => {
-      // const artist = artists[0];
+      // trim artist information
       let out = [];
       artists.map((artist) => {
         out.push({
@@ -152,60 +151,54 @@ router.get("/findEvents", (req, res) => {
         });
       });
       return out;
-      // let out = [];
-      // result.data.items.map((artist) => {
-      //   out.push(artist.name);
-      // });
-      // return out;
     })
-    .then((artists) => {
-      res.json(artists);
-      // res.json(artists);
-      // let out = [];
-      // let artist = artists[1];
-      // const query = artist.replace(" ", "%20");
-      // const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
-      // axios
-      //   .get(url)
-      //   .then((result) => {
-      //     // console.log(result.data._embedded.events[0]);
-      //     // console.log("location-----------------------");
-      //     // console.log(result.data._embedded.events[0]._embedded.venues[0].name);
-      //     // console.log(
-      //     //   result.data._embedded.events[0]._embedded.venues[0].location
-      //     // );
-      //     res.json({
-      //       location: {
-      //         name: result.data._embedded.events[0]._embedded.venues[0].name,
-      //         coords: {
-      //           lat: result.data._embedded.events[0]._embedded.venues[0]
-      //             .location.latitude,
-      //           lng: result.data._embedded.events[0]._embedded.venues[0]
-      //             .location.longitude,
-      //         },
-      //       },
-      //     });
-      //   })
-      //   .catch((e) => {
-      //     console.log("error");
-      //   });
+    .then(async (artists) => {
+      let out = [];
+
+      const events = await Promise.all([
+        getEvents(artists[0].name),
+        getEvents(artists[1].name),
+        getEvents(artists[2].name),
+        getEvents(artists[3].name),
+      ]);
+
+      let i = 0;
+      artists.map((artist) => {
+        out.push({
+          ...artist,
+          events: events[i] || null,
+        });
+        i++;
+      });
+
+      res.json(out);
     })
-    // .then((artists) => {
-    //
-    //   artists.map((artist) => {
-    //     console.log(artist.name);
-    //     const query = artist.name.replace(" ", "%20");
-    //     const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
-    //     console.log(url);
-    //     // axios.get(url).then((result) => {
-    //     //   out.push(result);
-    //     // });
-    //   });
-    //   res.json(out);
-    // })
     .catch((e) => {
       console.error(e);
     });
 });
+
+const getEvents = async (name) => {
+  const query = name.replace(" ", "%20");
+  const url = `https://app.ticketmaster.com/discovery/v2/events.json?size=5&apikey=${ticketMaster.key}&keyword=${query}`;
+  return await axios
+    .get(url)
+    .then((response) => {
+      const out = response.data._embedded?.events;
+      return out;
+      // location: {
+      //   name: result.data._embedded.events[0]._embedded.venues[0].name,
+      //   coords: {
+      //     lat: result.data._embedded.events[0]._embedded.venues[0].location
+      //       .latitude,
+      //     lng: result.data._embedded.events[0]._embedded.venues[0].location
+      //       .longitude,
+      //   },
+      // },
+    })
+    .catch((e) => {
+      throw e;
+    });
+};
 
 module.exports = router;

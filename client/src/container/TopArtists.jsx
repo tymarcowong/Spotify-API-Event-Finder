@@ -47,15 +47,15 @@ const TopArtists = () => {
   ];
 
   useEffect(() => {
-    setArtists(test);
+    // setArtists(test);
 
-    // const url = getEndpointUrl("/api/findEvents");
-    // const token = getTokenFromLS();
-    // const query = `?accessToken=${token}`;
-    // axios.get(url + query).then((res) => {
-    //   console.log(res.data);
-    //   setArtists(res.data);
-    // });
+    const url = getEndpointUrl("/api/findEvents");
+    const token = getTokenFromLS();
+    const query = `?accessToken=${token}`;
+    axios.get(url + query).then((res) => {
+      console.log(res.data);
+      // setArtists(res.data);
+    });
   }, []);
 
   return (
