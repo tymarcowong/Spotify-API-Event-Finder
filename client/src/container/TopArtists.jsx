@@ -131,7 +131,7 @@ const TopArtists = () => {
     const query = `?accessToken=${token}`;
     axios.get(url + query).then((res) => {
       console.log(res.data);
-      // setArtists(res.data);
+      setArtists(res.data);
     });
   }, []);
 

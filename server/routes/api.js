@@ -165,7 +165,7 @@ router.get("/findEvents", (req, res) => {
       artists.map((artist) => {
         out.push({
           ...artist,
-          events: events[i] || null,
+          events: events[i],
         });
         i++;
       });
@@ -195,8 +195,46 @@ const getEvents = async (name) => {
       //   },
       // },
     })
+    .then((events) => {
+      // trim event details
+      let out = [];
+
+      events?.map((event) => {
+        const venue = event._embedded.venues[0];
+        const eventTrim = {
+          name: event.name,
+          id: event.id,
+          ticketUrl: event.url,
+          images: event.images, // find largest and smallest later
+          time: {
+            date: event.dates.start.localDate,
+            time: event.dates.start.localTime,
+            timezone: event.dates.timezone,
+          },
+          status: event.dates.status.code,
+          venue: {
+            name: venue.name,
+            url: venue.url,
+            image: venue.images?.[0].url,
+            address: {
+              postCode: venue.postalCode,
+              city: venue.city,
+              country: venue.country.name,
+              address: venue.address,
+            },
+            coords: {
+              lat: venue.location.latitude,
+              lng: venue.location.longitude,
+            },
+          },
+        };
+        out.push(eventTrim);
+      });
+
+      return out;
+    })
     .catch((e) => {
-      throw e;
+      return e;
     });
 };
 

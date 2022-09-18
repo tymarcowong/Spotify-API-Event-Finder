@@ -4,7 +4,7 @@ import EventCard from "../components/EventCard";
 const Events = ({ events }) => {
   return (
     <>
-      {events ? (
+      {events.length > 0 ? (
         <ul>
           {events?.map((event) => (
             <EventCard key={1} event={event} />
