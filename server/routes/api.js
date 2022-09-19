@@ -205,7 +205,6 @@ const getEvents = async (name) => {
           name: event.name,
           id: event.id,
           ticketUrl: event.url,
-          images: event.images, // find largest and smallest later
           time: {
             date: event.dates.start.localDate,
             time: event.dates.start.localTime,

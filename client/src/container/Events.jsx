@@ -7,7 +7,7 @@ const Events = ({ events }) => {
       {events.length > 0 ? (
         <ul>
           {events?.map((event) => (
-            <EventCard key={1} event={event} />
+            <EventCard key={event.id} event={event} />
           ))}
         </ul>
       ) : (
